@@ -67,6 +67,7 @@ public class AppGui extends JFrame{
     public void taskSection(String taskName, Date completionDate){
         //Creating the panel for the task
         JPanel task = new JPanel();
+        task.setPreferredSize(new Dimension(getWidth(),50));
         task.setLayout(new BoxLayout(task, BoxLayout.X_AXIS));
         task.setBorder(new BevelBorder(BevelBorder.RAISED));
         SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");

@@ -55,7 +55,7 @@ public class sqlLogic {
     public static void populateTasks(){
         var url = "jdbc:sqlite:toDo.db";
         var sql = "SELECT name, date FROM tasks";
-        
+
         try(var conn = DriverManager.getConnection(url);
         var stmt = conn.createStatement();
         var rs = stmt.executeQuery(sql)){

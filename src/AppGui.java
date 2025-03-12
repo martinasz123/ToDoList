@@ -9,7 +9,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class AppGui extends JFrame{
-    private JPanel taskPanel;
+    //public static Object taskSection;
+    private static JPanel taskPanel;
     public AppGui(String user) {
         super(user + "'s to do list");
         setSize(500,500);
@@ -22,6 +23,8 @@ public class AppGui extends JFrame{
 
         header.setBorder(new LineBorder(Color.black));
         JButton taskBtn = taskBtn();
+        JButton dbBtn = createDbBtn();
+        header.add(dbBtn);
         header.add(taskBtn);
         add(header);
 
@@ -53,6 +56,7 @@ public class AppGui extends JFrame{
                 String taskName = taskNameField.getText();
                 Date completionDate = (Date) dateSpinner.getValue();
                 taskSection(taskName,completionDate);
+                sqlLogic.insertTask(taskName,completionDate);
                 revalidate();
             }
         });
@@ -64,17 +68,17 @@ public class AppGui extends JFrame{
         return taskDetails;
     }
 
-    public void taskSection(String taskName, Date completionDate){
+    public static void taskSection(String taskName, Date completionDate){
         //Creating the panel for the task
         JPanel task = new JPanel();
-        task.setPreferredSize(new Dimension(getWidth(),50));
+        task.setPreferredSize(new Dimension(500,50));
         task.setLayout(new BoxLayout(task, BoxLayout.X_AXIS));
         task.setBorder(new BevelBorder(BevelBorder.RAISED));
         SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
 
         //Creating the task fields
         JLabel name = new JLabel("<html><b>Task name:</b> " + taskName + " </html>");
-        JLabel date = new JLabel("<html><b>  Completion date:</b> " + String.valueOf(formatDate.format(completionDate)) + "</html>");
+        JLabel date = new JLabel("<html><b>Completion date:</b> " + String.valueOf(formatDate.format(completionDate)) + "</html>");
         JLabel completionName = new JLabel("<html><b>Completed:</b></html>");
         JCheckBox completed = new JCheckBox();
 
@@ -84,10 +88,8 @@ public class AppGui extends JFrame{
         task.add(completionName);
         task.add(completed);
 
-        taskPanel.add(task,0);
+        taskPanel.add(task);
         taskPanel.revalidate();
-        taskPanel.repaint();
-
     }
 
     private JButton taskBtn(){
@@ -100,6 +102,20 @@ public class AppGui extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 JDialog newTask = addTask();
                 newTask.setVisible(true);
+            }
+        });
+        return addTaskBtn;
+    }
+
+    private JButton createDbBtn(){
+        JButton addTaskBtn = new JButton("Create DB");
+        addTaskBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        addTaskBtn.setLayout(null);
+
+        addTaskBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sqlLogic.createDB();
             }
         });
         return addTaskBtn;

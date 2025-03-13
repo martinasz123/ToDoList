@@ -1,10 +1,11 @@
+import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Date;
 
 public class sqlLogic {
+    private static final String url = "jdbc:sqlite:" + System.getProperty("user.home") + "/Documents/ToDoList/toDo.db";
     public static void createTable(){
-        var url = "jdbc:sqlite:toDo.db";
         var sql = "CREATE TABLE IF NOT EXISTS tasks ("
                 +" name TEXT,"
                 +" date INTEGER NOT NULL,"
@@ -20,7 +21,11 @@ public class sqlLogic {
         }
     }
     public static void createDB(){
-        String url = "jdbc:sqlite:toDo.db";
+        File dbDir = new File(System.getProperty("user.home") + "/Documents/ToDoList");
+        if(!dbDir.exists()){
+            dbDir.mkdirs();
+            System.out.println("File was created");
+        }
         try( var conn = DriverManager.getConnection(url)){
             if (conn != null){
                 var meta  = conn.getMetaData();
@@ -32,8 +37,7 @@ public class sqlLogic {
             System.err.println(e.getMessage());
         }
     }
-    public static void insertTask(String taskName, Date completionDate ){
-        String url = "jdbc:sqlite:toDo.db";
+    public static void insertTask(String taskName, Date completionDate){
         String sql = "INSERT INTO tasks(name,date) VALUES(?,?)";
         try (var conn  = DriverManager.getConnection(url);
         var pstmt = conn.prepareStatement(sql)){
@@ -45,8 +49,7 @@ public class sqlLogic {
         }
     }
     public static void populateTasks(){
-        var url = "jdbc:sqlite:toDo.db";
-        var sql = "SELECT name, date FROM tasks";
+        var sql = "SELECT name, date, notes FROM tasks";
         try(var conn = DriverManager.getConnection(url);
         var stmt = conn.createStatement();
         var rs = stmt.executeQuery(sql)){
@@ -58,7 +61,6 @@ public class sqlLogic {
         }
     }
     public static void sortData(String sortType){
-        var url = "jdbc:sqlite:toDo.db";
         var sql = "";
         switch (sortType){
             case "Sort By":
@@ -87,7 +89,6 @@ public class sqlLogic {
         }
     }
     public static void clearTable(){
-        var url = "jdbc:sqlite:toDo.db";
         var sql = "DELETE FROM tasks";
         try(var conn = DriverManager.getConnection(url);
         var pstmt = conn.prepareStatement(sql)){
@@ -97,12 +98,24 @@ public class sqlLogic {
         }
     }
     public static void clearTask(String name, Date CompletionDate){
-        var url = "jdbc:sqlite:toDo.db";
         var sql = "DELETE FROM tasks WHERE name = ? AND date = ?";
         try(var conn = DriverManager.getConnection(url);
             var pstmt = conn.prepareStatement(sql)){
             pstmt.setString(1,name);
             pstmt.setLong(2,CompletionDate.getTime()/1000);
+            pstmt.executeUpdate();
+        }catch (SQLException e){
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public static void addNoteDB(String taskName, Date completionDate, String note){
+        String sql = "UPDATE tasks SET notes = ? WHERE name = ? AND date = ?";
+        try (var conn  = DriverManager.getConnection(url);
+             var pstmt = conn.prepareStatement(sql)){
+            pstmt.setString(1,note);
+            pstmt.setString(2,taskName);
+            pstmt.setLong(3,completionDate.getTime()/1000);
             pstmt.executeUpdate();
         }catch (SQLException e){
             System.err.println(e.getMessage());

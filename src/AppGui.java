@@ -112,7 +112,7 @@ public class AppGui extends JFrame implements ItemListener {
 
 
         //creating and styling the notes field
-        JTextArea notesArea = notesAreaCreator(notesPanel);
+        JTextArea notesArea = notesAreaCreator(notesPanel,taskName,completionDate,notes);
 
 
         //Calling a method to handle fieldsPanel completion
@@ -218,24 +218,28 @@ public class AppGui extends JFrame implements ItemListener {
         return completeBtn;
     }
 
-    public static JTextArea notesAreaCreator(JPanel notesPanel){
+    public static JTextArea notesAreaCreator(JPanel notesPanel, String taskName, Date completionDate, String notesFromDB){
         JTextArea notes = new JTextArea();
         notes.setPreferredSize(new Dimension(notesPanel.getWidth() - 20, notesPanel.getHeight()-10));
         notes.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
+        notes.append(notesFromDB);
 
-        notes.addFocusListener(new FocusListener() {
+
+        notes.addMouseListener(new MouseAdapter() {
             @Override
-            public void focusGained(FocusEvent e) {
+            public void mouseExited(MouseEvent e) {
                 notes.setBackground(Color.white);
+                sqlLogic.addNoteDB(taskName,completionDate,notes.getText());
+                notes.transferFocus();
             }
 
             @Override
-            public void focusLost(FocusEvent e) {
+            public void mouseEntered(MouseEvent e) {
                 notes.setBackground(Color.lightGray);
-                notes.getText();
             }
         });
 
         return notes;
     }
+
 }

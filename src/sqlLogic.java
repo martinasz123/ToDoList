@@ -6,8 +6,9 @@ public class sqlLogic {
     public static void createTable(){
         var url = "jdbc:sqlite:toDo.db";
         var sql = "CREATE TABLE IF NOT EXISTS tasks ("
-                +" name TEXT PRIMARY KEY, "
-                +" date INTEGER NOT NULL"
+                +" name TEXT,"
+                +" date INTEGER NOT NULL,"
+                +" notes TEXT"
                 + ");";
         try (var conn = DriverManager.getConnection(url);
             var stmt = conn.createStatement()){
@@ -50,7 +51,7 @@ public class sqlLogic {
         var stmt = conn.createStatement();
         var rs = stmt.executeQuery(sql)){
             while (rs.next()){
-                AppGui.taskSection(rs.getString("name"),new Date(rs.getLong("date")*1000));
+                AppGui.taskCard(rs.getString("name"),new Date(rs.getLong("date")*1000),rs.getString("notes"));
             }
         }catch (SQLException e){
             System.err.println(e.getMessage());
@@ -79,7 +80,7 @@ public class sqlLogic {
             var stmt = conn.createStatement();
             var rs = stmt.executeQuery(sql)){
             while (rs.next()){
-                AppGui.taskSection(rs.getString("name"),new Date(rs.getLong("date")*1000));
+                AppGui.taskCard(rs.getString("name"),new Date(rs.getLong("date")*1000),rs.getString("notes"));
             }
         }catch (SQLException e){
             System.err.println(e.getMessage());
